@@ -9,9 +9,9 @@ App.prototype.init = function() {
 
 App.prototype.fetch = function() {
   $.ajax({
-    url: this.server,
+    url: this.server + '?order=-updatedAt',
     type: 'GET',
-    order: 'updatedAt',
+    //order: 'updatedAt',
     contentType: 'application/json',
     success: function(data){
       console.log('chatterbox: message received');
