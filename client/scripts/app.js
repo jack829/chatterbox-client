@@ -57,13 +57,19 @@ App.prototype.init = function() {
 
 App.prototype.fetch = function(objectID) {
   $.ajax({
-    url: this.server+"/"+objectID,
+    url: this.server,
     type: 'GET',
     contentType: 'application/json',
     success: function(data){
       console.log('chatterbox: message received');
       console.log(data);
-      $('#main').append('<div>' +JSON.stringify(data) + '</div>');
+      // $('#main').append('<div>' + JSON.stringify(data) + '</div>');
+      _.each(data.results, function(message){
+        $('#main').append('<div>' + message.username + ': ' + message.text +'. In room: ' + message.roomname+'</div>');
+      });
+      //iterate through all results
+      //assign to div
+      //more readable texts
     },
     error: function(data){
       console.error('chatterbox: failed to receive message');
@@ -96,5 +102,5 @@ App.prototype.clearMessages = function() {
 
 var app = new App();
 
-app.send({"score":1337,"playerName":"Jack Peterson",});
+app.send({"username":1337,"text":"Jack Peterson","room": "asd"});
 app.fetch('69AdwZU98l');
