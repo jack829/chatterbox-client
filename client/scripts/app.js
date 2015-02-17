@@ -5,19 +5,21 @@ var App = function() {
 App.prototype.init = function() {
   $('#send .submit').on('submit', this.handleSubmit());
   $('.username').on('click', this.addFriend());
+  this.fetch();
+  setInterval(this.clearMessages.bind(this), 5000);
+  setInterval(this.fetch.bind(this), 5000);
 };
 
 App.prototype.fetch = function() {
   $.ajax({
     url: this.server + '?order=-updatedAt',
     type: 'GET',
-    //order: 'updatedAt',
     contentType: 'application/json',
     success: function(data){
       console.log('chatterbox: message received');
       console.log(data);
       _.each(data.results, function(message){
-        $('#main').append('<div><p>' + message.username + ': ' + message.text +'. In room: ' + message.roomname+'</p><p>' + message.createdAt + '</p></div>');
+        $('#main').prepend('<div class= "message"><p>' + message.username + ': ' + message.text +'. In room: ' + message.roomname+'</p><p>' + message.createdAt + '</p></div>');
       });
       //iterate through all results
       //assign to div
@@ -27,6 +29,7 @@ App.prototype.fetch = function() {
       console.error('chatterbox: failed to receive message');
     },
   });
+  //setInterval(this.fetch(), 50000);
 };
 
 App.prototype.send = function(message) {
@@ -47,7 +50,7 @@ App.prototype.send = function(message) {
 };
 
 App.prototype.clearMessages = function() {
-  $('blink').remove();
+  $('.message').remove();
 };
 
 App.prototype.addMessage = function(message) {
@@ -67,6 +70,6 @@ App.prototype.handleSubmit = function(){
 };
 
 var app = new App();
-
-app.send({"username":'Jack and John',"text":"yo","roomname": "asd"});
-app.fetch();
+app.init();
+app.send({"username":'Jack and John',"text":"yo","roomname": "lobby"});
+//app.fetch();
