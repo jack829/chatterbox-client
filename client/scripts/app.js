@@ -3,6 +3,7 @@ $(function() {
   app = {
     server: 'https://api.parse.com/1/classes/chatterbox/',
     rooms: {},
+    friends: {},
     // username: 'anonymous',
     // roomname: 'lobby',
     // lastMessageId: 0,
@@ -14,7 +15,7 @@ $(function() {
       app.$chats = $('#chats');
       app.$roomSelect = $('#roomSelect');
       app.$send = $('#send');
-
+      
 
       //$('#send .submit').on('submit', app.handleSubmit());
       $('.username').on('click', app.addFriend());
@@ -34,8 +35,10 @@ $(function() {
           console.log('chatterbox: message received');
           console.log(data);
           _.each(data.results, function(message){
+            if( message.roomname === app.$roomSelect.val()){
+              app.addMessage(message);
+            }
             app.addRoom(app.escapeHtml(message.roomname));
-            app.addMessage(message);
             // $('#main').append('<div class= "message"><p>' + app.escapeHtml(message.username) + ': ' + app.escapeHtml(message.text) +'. In room: ' + app.escapeHtml(message.roomname) +'</p><p>' + app.escapeHtml(message.createdAt) + '</p></div>');
           });
           //iterate through all results
@@ -85,10 +88,12 @@ $(function() {
     },
 
     saveRoom: function(event){
-      
+      app.clearMessages();
+      app.fetch();
     },
+
     addFriend : function(){
-  
+      
     },    
 
     handleSubmit : function(evt){
