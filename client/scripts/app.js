@@ -18,7 +18,7 @@ $(function() {
       
 
       //$('#send .submit').on('submit', app.handleSubmit());
-      $('.username').on('click', app.addFriend());
+      app.$chats.on('click', '.username', app.addFriend);
       app.$send.on('submit', app.handleSubmit);
       app.$roomSelect.on('change', app.saveRoom);
       app.fetch();
@@ -77,7 +77,12 @@ $(function() {
 
     addMessage : function(message) {
       message.roomname = app.escapeHtml(message.roomname) || 'lobby';
-      $('#chats').append('<div class="message"><p><a class="username">' + app.escapeHtml(message.username) + '</a>: ' + app.escapeHtml(message.text) +'. In room: ' + app.escapeHtml(message.roomname) +'</p><p>' + app.escapeHtml(message.createdAt) + '</p></div>');
+
+      if(!app.friends[message.username]){
+        $('#chats').append('<div class="message"><p><a href="#" class="username">' + app.escapeHtml(message.username) + '</a>: ' + app.escapeHtml(message.text) +'. In room: ' + app.escapeHtml(message.roomname) +'</p><p>' + app.escapeHtml(message.createdAt) + '</p></div>');
+      } else {
+        $('#chats').append('<div class="message"><p class="friend"><a href="#" class="username">' + app.escapeHtml(message.username) + '</a>: ' + app.escapeHtml(message.text) +'. In room: ' + app.escapeHtml(message.roomname) +'</p><p>' + app.escapeHtml(message.createdAt) + '</p></div>');
+      }
     },
 
     addRoom : function(room) {
@@ -92,8 +97,13 @@ $(function() {
       app.fetch();
     },
 
-    addFriend : function(){
-      
+    addFriend : function(event){
+      if(!app.friends[$(event.target).text()]){
+        app.friends[$(event.target).text()] = true;
+      }
+      console.log($(event.target));
+      app.clearMessages();
+      app.fetch();
     },    
 
     handleSubmit : function(evt){
