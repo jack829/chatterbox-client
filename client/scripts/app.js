@@ -2,6 +2,7 @@ var app;
 $(function() {
   app = {
     server: 'https://api.parse.com/1/classes/chatterbox/',
+    rooms: {},
     // username: 'anonymous',
     // roomname: 'lobby',
     // lastMessageId: 0,
@@ -18,6 +19,7 @@ $(function() {
       //$('#send .submit').on('submit', app.handleSubmit());
       $('.username').on('click', app.addFriend());
       app.$send.on('submit', app.handleSubmit);
+      app.$roomSelect.on('change', app.saveRoom);
       app.fetch();
       // setInterval(app.clearMessages.bind(app), 5000);
       // setIterval(app.fetch.bind(app), 5000);
@@ -32,6 +34,7 @@ $(function() {
           console.log('chatterbox: message received');
           console.log(data);
           _.each(data.results, function(message){
+            app.addRoom(app.escapeHtml(message.roomname));
             app.addMessage(message);
             // $('#main').append('<div class= "message"><p>' + app.escapeHtml(message.username) + ': ' + app.escapeHtml(message.text) +'. In room: ' + app.escapeHtml(message.roomname) +'</p><p>' + app.escapeHtml(message.createdAt) + '</p></div>');
           });
@@ -45,6 +48,7 @@ $(function() {
       });
       //setInterval(app.fetch(), 50000);
     },
+
     send : function(message) {
       $.ajax({
         url: app.server,
@@ -69,20 +73,31 @@ $(function() {
     },
 
     addMessage : function(message) {
-      message.roomname = message.roomname || 'lobby';
+      message.roomname = app.escapeHtml(message.roomname) || 'lobby';
       $('#chats').append('<div class="message"><p><a class="username">' + app.escapeHtml(message.username) + '</a>: ' + app.escapeHtml(message.text) +'. In room: ' + app.escapeHtml(message.roomname) +'</p><p>' + app.escapeHtml(message.createdAt) + '</p></div>');
     },
+
     addRoom : function(room) {
-      $('#roomSelect').append('<option value="' + room + '">'+ room +'</option>');
+      if(!rooms[room]){
+        $('#roomSelect').append('<option value="' + room + '">'+ room +'</option>');
+        rooms[room] = true;
+      }
+    },
+
+    saveRoom: function(event){
+      
     },
     addFriend : function(){
   
     },    
+
     handleSubmit : function(evt){
       var message = { username: app.username,
                     text: app.$message.val(),
-                    roomname: app.roomname || 'lobby' };
+                    roomname: $('#roomname').val() || app.$roomSelect.val() || 'lobby' };
       app.send(message);
+
+      app.addRoom(message.roomname);
       //app.clearMessages();
       //app.fetch();
 
